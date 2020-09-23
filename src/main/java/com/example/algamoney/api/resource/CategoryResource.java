@@ -2,6 +2,7 @@ package com.example.algamoney.api.resource;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import com.example.algamoney.api.model.Category;
 import com.example.algamoney.api.repository.CategoryRepository;
@@ -26,6 +27,16 @@ public class CategoryResource {
         return categoryRepository.findAll();
     }
 
+    @GetMapping("/{code}")
+    public ResponseEntity<Category> listCategory(@PathVariable(value="code") Long code){
+        Optional<Category> category = categoryRepository.findById(code);
+        if (category.isPresent()){
+            return ResponseEntity.ok(category.get());
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Category> create(@RequestBody Category category, HttpServletResponse response){
@@ -37,5 +48,4 @@ public class CategoryResource {
 
         return ResponseEntity.created(uri).body(categorySave);
     }
-
 }

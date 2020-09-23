@@ -10,7 +10,6 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
-
     private String name;
 
     public Long getCode() {
