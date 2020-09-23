@@ -12,4 +12,3 @@ public class AlgamoneyApiApplication {
 	}
 
 }
-//@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
