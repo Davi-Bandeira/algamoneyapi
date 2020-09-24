@@ -1,6 +1,7 @@
 package com.example.algamoney.api.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
@@ -10,6 +11,8 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
+
+    @NotNull
     private String name;
 
     public Long getCode() {

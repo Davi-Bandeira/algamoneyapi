@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.xml.validation.Validator;
 
 @RestController
 @RequestMapping("/categories")
@@ -39,7 +41,7 @@ public class CategoryResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Category> create(@RequestBody Category category, HttpServletResponse response){
+    public ResponseEntity<Category> create(@Valid @RequestBody Category category, HttpServletResponse response){
         Category categorySave = categoryRepository.save(category);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{code}")
