@@ -15,8 +15,6 @@ public class PersonService {
     @Autowired
     private PersonRepository personRepository;
 
-
-
     public Person update(Long code , Person person){
         Optional<Person> personSave = personRepository.findById(code);
         if(personSave.isPresent()){
@@ -29,4 +27,14 @@ public class PersonService {
         }
     }
 
+    public void updatePropActive(Long code, Boolean active) {
+        Optional<Person> personSave = personRepository.findById(code);
+        if(personSave.isPresent()){
+            Person personUpdate = personSave.get();
+            personUpdate.setActive(active);
+            personRepository.save(personUpdate);
+        }else{
+            throw new EmptyResultDataAccessException(1);
+        }
+    }
 }
