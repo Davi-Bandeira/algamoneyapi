@@ -41,4 +41,10 @@ public class PersonResource {
         publisher.publishEvent(new ResourceCreatedEvent(this, response, personSave.getCode()));
         return ResponseEntity.status(HttpStatus.CREATED).body(personSave);
     }
+
+    @DeleteMapping("{code}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long code){
+        personRepository.deleteById(code);
+    }
 }
