@@ -1,15 +1,16 @@
 package com.example.algamoney.api.resource;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+
+import com.example.algamoney.api.event.ResourceCreatedEvent;
 import com.example.algamoney.api.model.Category;
 import com.example.algamoney.api.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -20,6 +21,9 @@ public class CategoryResource {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     @GetMapping
     public List<Category> list(){
@@ -33,14 +37,9 @@ public class CategoryResource {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Category> create(@Valid @RequestBody Category category, HttpServletResponse response){
         Category categorySave = categoryRepository.save(category);
-
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{code}")
-                .buildAndExpand(categorySave.getCode()).toUri();
-        response.setHeader("Location", uri.toASCIIString());
-
-        return ResponseEntity.created(uri).body(categorySave);
+        publisher.publishEvent(new ResourceCreatedEvent(this, response, categorySave.getCode()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(categorySave);
     }
 }
