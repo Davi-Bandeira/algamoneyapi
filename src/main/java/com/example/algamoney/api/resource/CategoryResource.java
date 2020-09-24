@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+
 import com.example.algamoney.api.model.Category;
 import com.example.algamoney.api.repository.CategoryRepository;
 
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.xml.validation.Validator;
+
 
 @RestController
 @RequestMapping("/categories")

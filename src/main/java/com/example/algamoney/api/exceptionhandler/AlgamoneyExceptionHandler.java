@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -30,7 +31,7 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
 
         String messageUser = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
         String messageDeveloper = ex.getCause().toString();
-        List<Error> errors = Arrays.asList(new Error(messageUser, messageDeveloper));
+        List<Error> errors = Collections.singletonList(new Error(messageUser, messageDeveloper));
         return handleExceptionInternal(ex, errors, headers, HttpStatus.BAD_REQUEST, request);
     }
 
