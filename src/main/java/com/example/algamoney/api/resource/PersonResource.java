@@ -3,8 +3,11 @@ package com.example.algamoney.api.resource;
 import com.example.algamoney.api.event.ResourceCreatedEvent;
 import com.example.algamoney.api.model.Person;
 import com.example.algamoney.api.repository.PersonRepository;
+import com.example.algamoney.api.service.PersonService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,9 @@ public class PersonResource {
 
     @Autowired
     private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private PersonService personService;
 
     @GetMapping
     public List<Person> list(){
@@ -46,5 +52,11 @@ public class PersonResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long code){
         personRepository.deleteById(code);
+    }
+
+    @PutMapping("/{code}")
+    public ResponseEntity<Person> update(@PathVariable Long code, @Valid @RequestBody Person person){
+        Person personSave = personService.update(code, person);
+        return ResponseEntity.ok(personSave);
     }
 }
