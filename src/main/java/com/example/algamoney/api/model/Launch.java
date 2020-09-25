@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-@Table(name = "releases")
+@Table(name = "launchs")
 public class Launch {
 
     @Id
@@ -30,11 +30,11 @@ public class Launch {
 
     @ManyToOne
     @JoinColumn(name = "category_code")
-    private Category codeCategory;
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "person_code")
-    private Person personCode;
+    private Person person;
 
     public Long getCode() {
         return code;
@@ -92,20 +92,21 @@ public class Launch {
         this.type = type;
     }
 
-    public Category getCodeCategory() {
-        return codeCategory;
+
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCodeCategory(Category codeCategory) {
-        this.codeCategory = codeCategory;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
-    public Person getPersonCode() {
-        return personCode;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setPersonCode(Person personCode) {
-        this.personCode = personCode;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     @Override
