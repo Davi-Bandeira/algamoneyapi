@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.example.algamoney.api.event.ResourceCreatedEvent;
 import com.example.algamoney.api.model.Category;
 import com.example.algamoney.api.repository.CategoryRepository;
+import com.example.algamoney.api.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,9 @@ public class CategoryResource {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping
     public List<Category> list(){
         return categoryRepository.findAll();
@@ -42,4 +46,17 @@ public class CategoryResource {
         publisher.publishEvent(new ResourceCreatedEvent(this, response, categorySave.getCode()));
         return ResponseEntity.status(HttpStatus.CREATED).body(categorySave);
     }
+
+    @DeleteMapping("/{code}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long code){
+        categoryRepository.deleteById(code);
+    }
+
+    @PutMapping("/{code}")
+    public ResponseEntity<Category> update(@PathVariable Long code, @Valid @RequestBody Category category){
+        Category categorySave = categoryService.update(code, category);
+        return ResponseEntity.ok(categorySave);
+    }
+
 }
