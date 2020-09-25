@@ -1,8 +1,10 @@
 package com.example.algamoney.api.exceptionhandler;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,14 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
             errors.add(new Error(messageUser, messageDeveloper));
         }
         return errors;
+    }
+
+    @ExceptionHandler({ DataIntegrityViolationException.class })
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request){
+        String messageUser = messageSource.getMessage("recurso.operacao-nao-permitida", null, LocaleContextHolder.getLocale());
+        String messageDeveloper = ExceptionUtils.getRootCauseMessage(ex);
+        List<Error> errors = Collections.singletonList(new Error(messageUser, messageDeveloper));
+        return handleExceptionInternal(ex, errors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler({ EmptyResultDataAccessException.class })
