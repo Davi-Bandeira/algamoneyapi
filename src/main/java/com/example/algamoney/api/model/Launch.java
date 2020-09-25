@@ -1,6 +1,8 @@
 package com.example.algamoney.api.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -21,6 +23,8 @@ public class Launch {
     @Column(name = "payment_date")
     private LocalDate paymentDate;
 
+    @NotNull
+    @Min(0)
     private BigDecimal value;
 
     private String note;
