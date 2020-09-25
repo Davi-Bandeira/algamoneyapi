@@ -15,8 +15,10 @@ public class Launch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long code;
 
+    @NotNull
     private String description;
 
+    @NotNull
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
 
@@ -29,13 +31,16 @@ public class Launch {
 
     private String note;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private TypeLaunch type;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "category_code")
     private Category category;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "person_code")
     private Person person;

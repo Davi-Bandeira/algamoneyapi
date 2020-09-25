@@ -6,6 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,27 +46,36 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, errors, headers, HttpStatus.BAD_REQUEST, request);
     }
 
-    private List<Error> createErrorList(BindingResult bindingResult){
+    private List<Error> createErrorList(BindingResult bindingResult) {
         List<Error> errors = new ArrayList<>();
 
-        for(FieldError fieldError : bindingResult.getFieldErrors()) {
-            String messageUser = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            String messageUser = messageSource.getMessage(fieldError.getObjectName() + "." + fieldError.getField(), null, LocaleContextHolder.getLocale()) + " " + messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
             String messageDeveloper = fieldError.toString();
             errors.add(new Error(messageUser, messageDeveloper));
         }
         return errors;
     }
 
-    @ExceptionHandler({ DataIntegrityViolationException.class })
-    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request){
+    @ExceptionHandler({InvalidDataAccessApiUsageException.class})
+    public ResponseEntity<Object> handleInvalidDataAccessApiUsageException(InvalidDataAccessApiUsageException ex, WebRequest request) {
+        String messageUser = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
+        String messageDeveloper = ExceptionUtils.getRootCauseMessage(ex);
+        List<Error> errors = Collections.singletonList(new Error(messageUser, messageDeveloper));
+        return handleExceptionInternal(ex, errors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
         String messageUser = messageSource.getMessage("recurso.operacao-nao-permitida", null, LocaleContextHolder.getLocale());
         String messageDeveloper = ExceptionUtils.getRootCauseMessage(ex);
         List<Error> errors = Collections.singletonList(new Error(messageUser, messageDeveloper));
         return handleExceptionInternal(ex, errors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @ExceptionHandler({ EmptyResultDataAccessException.class })
-    public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex, WebRequest request){
+    @ExceptionHandler({EmptyResultDataAccessException.class})
+    public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex, WebRequest request) {
         String messageUser = messageSource.getMessage("recurso.nao-encontrado", null, LocaleContextHolder.getLocale());
         String messageDeveloper = ex.toString();
         List<Error> errors = Collections.singletonList(new Error(messageUser, messageDeveloper));
@@ -75,10 +83,10 @@ public class AlgamoneyExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     public static class Error {
-        private final String messageUser ;
+        private final String messageUser;
         private final String messageDeveloper;
 
-        public Error(String messageUser, String messageDeveloper){
+        public Error(String messageUser, String messageDeveloper) {
             this.messageUser = messageUser;
             this.messageDeveloper = messageDeveloper;
         }
