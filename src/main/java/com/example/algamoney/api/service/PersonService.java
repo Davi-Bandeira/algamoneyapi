@@ -16,25 +16,23 @@ public class PersonService {
     private PersonRepository personRepository;
 
     public Person update(Long code , Person person){
-        Optional<Person> personSave = personRepository.findById(code);
-        if(personSave.isPresent()){
-            Person personUpdate = personSave.get();
-            BeanUtils.copyProperties(person, personUpdate, "code");
-            //return ResponseEntity.status(HttpStatus.OK).body(personRepository.save(personSave.get()));
-            return personRepository.save(personUpdate);
-        }else{
-            throw new EmptyResultDataAccessException(1);
-        }
+        Person personUpdate = findByCode(code);
+        BeanUtils.copyProperties(person, personUpdate, "code");
+        return personRepository.save(personUpdate);
     }
 
     public void updatePropActive(Long code, Boolean active) {
+        Person personUpdate = findByCode(code);
+        personUpdate.setActive(active);
+        personRepository.save(personUpdate);
+    }
+
+    public Person findByCode(Long code){
         Optional<Person> personSave = personRepository.findById(code);
-        if(personSave.isPresent()){
-            Person personUpdate = personSave.get();
-            personUpdate.setActive(active);
-            personRepository.save(personUpdate);
-        }else{
+        if (!personSave.isPresent()){
             throw new EmptyResultDataAccessException(1);
+        }else{
+            return personSave.get();
         }
     }
 }

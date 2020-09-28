@@ -1,5 +1,7 @@
 package com.example.algamoney.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -19,6 +21,12 @@ public class Person {
 
     @NotNull
     private Boolean active;
+
+    @JsonIgnore
+    @Transient
+    public boolean isInactive(){
+        return !this.active;
+    }
 
     public Long getCode() {
         return code;
