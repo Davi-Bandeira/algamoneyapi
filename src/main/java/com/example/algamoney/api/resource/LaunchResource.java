@@ -4,6 +4,7 @@ import com.example.algamoney.api.event.ResourceCreatedEvent;
 import com.example.algamoney.api.exceptionhandler.AlgamoneyExceptionHandler;
 import com.example.algamoney.api.model.Launch;
 import com.example.algamoney.api.repository.LaunchRepository;
+import com.example.algamoney.api.repository.filter.LaunchFilter;
 import com.example.algamoney.api.service.LaunchService;
 import com.example.algamoney.api.service.exception.PersonNonExistentOrInactiveException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,14 @@ public class LaunchResource {
     @Autowired
     private MessageSource messageSource;
 
+//    @GetMapping
+//    public List<Launch> list(){
+//        return launchRepository.findAll();
+//    }
+
     @GetMapping
-    public List<Launch> list(){
-        return launchRepository.findAll();
+    public List<Launch> search(LaunchFilter launchFilter){
+        return launchRepository.search(launchFilter);
     }
 
     @GetMapping("/{code}")
