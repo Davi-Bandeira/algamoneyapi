@@ -60,6 +60,12 @@ public class LaunchResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(launchSave);
     }
 
+    @DeleteMapping("{code}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long code){
+        launchRepository.deleteById(code);
+    }
+
     @ExceptionHandler( {PersonNonExistentOrInactiveException.class} )
     public ResponseEntity<Object> handlePersonNonExistentOrInactiveException(PersonNonExistentOrInactiveException ex){
         String messageUser = messageSource.getMessage("pessoa.inexistente-ou-inativa", null, LocaleContextHolder.getLocale());
