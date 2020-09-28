@@ -2,12 +2,12 @@ package com.example.algamoney.api.repository.Launch;
 
 import com.example.algamoney.api.model.Launch;
 import com.example.algamoney.api.repository.filter.LaunchFilter;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface LaunchRepositoryQuery {
 
-    List<Launch> search(LaunchFilter launchFilter);
+    Page<Launch> search(LaunchFilter launchFilter, Pageable pageable);
 
 }
 

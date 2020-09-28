@@ -2,6 +2,9 @@ package com.example.algamoney.api.repository.Launch;
 
 import com.example.algamoney.api.model.Launch;
 import com.example.algamoney.api.repository.filter.LaunchFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -20,7 +23,7 @@ public class LaunchRepositoryImpl implements LaunchRepositoryQuery{
     private EntityManager manager;
 
     @Override
-    public List<Launch> search(LaunchFilter launchFilter) {
+    public Page<Launch> search(LaunchFilter launchFilter, Pageable pageable) {
         CriteriaBuilder builder = manager.getCriteriaBuilder();
         CriteriaQuery<Launch> criteria = builder.createQuery(Launch.class);
 
@@ -31,7 +34,30 @@ public class LaunchRepositoryImpl implements LaunchRepositoryQuery{
         criteria.where(predicates);
 
         TypedQuery<Launch> query = manager.createQuery(criteria);
-        return query.getResultList();
+        adicionarRestricoesDePaginacao(query, pageable);
+
+        return new PageImpl<>(query.getResultList(), pageable, total(launchFilter));
+    }
+
+    private Long total(LaunchFilter launchFilter) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+        Root<Launch> root = criteria.from(Launch.class);
+
+        Predicate[] predicates = createRestrictions(launchFilter, builder, root);
+        criteria.where(predicates);
+
+        criteria.select(builder.count(root));
+        return manager.createQuery(criteria).getSingleResult();
+    }
+
+    private void adicionarRestricoesDePaginacao(TypedQuery<Launch> query, Pageable pageable) {
+        int paginaAtual = pageable.getPageNumber();
+        int totalRegistroPorPagina = pageable.getPageSize();
+        int primeiroRegistroDaPagina = paginaAtual * totalRegistroPorPagina;
+
+        query.setFirstResult(primeiroRegistroDaPagina);
+        query.setMaxResults(totalRegistroPorPagina);
     }
 
     private Predicate[] createRestrictions(LaunchFilter launchFilter, CriteriaBuilder builder, Root<Launch> root){
