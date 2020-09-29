@@ -34,6 +34,7 @@ public class CategoryResource {
         return categoryRepository.findAll();
     }
 
+    @CrossOrigin(maxAge = 10, origins = {"http://localhost:8000"})
     @GetMapping("/{code}")
     public ResponseEntity<Category> listCategory(@PathVariable(value="code") Long code){
         Optional<Category> category = categoryRepository.findById(code);
