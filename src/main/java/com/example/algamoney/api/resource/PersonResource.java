@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,17 +30,20 @@ public class PersonResource {
     private PersonService personService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
     public List<Person> list(){
         return personRepository.findAll();
     }
 
     @GetMapping("/{code}")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
     public ResponseEntity<Person> listPerson(@PathVariable(value="code") Long code){
         Optional<Person> person = personRepository.findById(code);
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')")
     public ResponseEntity<Person> create(@Valid @RequestBody Person person, HttpServletResponse response){
         Person personSave = personRepository.save(person);
         publisher.publishEvent(new ResourceCreatedEvent(this, response, personSave.getCode()));

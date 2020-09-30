@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,23 +40,21 @@ public class LaunchResource {
     @Autowired
     private MessageSource messageSource;
 
-//    @GetMapping
-//    public List<Launch> list(){
-//        return launchRepository.findAll();
-//    }
-
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANÇAMENTO') and #oauth2.hasScope('read')")
     public Page<Launch> search(LaunchFilter launchFilter, Pageable pageable){
         return launchRepository.search(launchFilter, pageable);
     }
 
     @GetMapping("/{code}")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANÇAMENTO') and #oauth2.hasScope('read')")
     public ResponseEntity<Launch> listLaunch(@PathVariable Long code){
        Optional<Launch> launch = launchRepository.findById(code);
         return launch.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANÇAMENTO') and #oauth2.hasScope('write')")
     public ResponseEntity<Launch> create(@Valid @RequestBody Launch launch, HttpServletResponse response){
         Launch launchSave = launchService.save(launch);
         publisher.publishEvent(new ResourceCreatedEvent(this, response, launchSave.getCode()));
