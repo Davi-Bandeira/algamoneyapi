@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,18 +31,21 @@ public class CategoryResource {
     private CategoryService categoryService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
     public List<Category> list(){
         return categoryRepository.findAll();
     }
 
     @CrossOrigin(maxAge = 10, origins = {"http://localhost:8000"})
     @GetMapping("/{code}")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
     public ResponseEntity<Category> listCategory(@PathVariable(value="code") Long code){
         Optional<Category> category = categoryRepository.findById(code);
         return category.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')")
     public ResponseEntity<Category> create(@Valid @RequestBody Category category, HttpServletResponse response){
         Category categorySave = categoryRepository.save(category);
         publisher.publishEvent(new ResourceCreatedEvent(this, response, categorySave.getCode()));
