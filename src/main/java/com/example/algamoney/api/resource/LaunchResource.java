@@ -5,6 +5,7 @@ import com.example.algamoney.api.exceptionhandler.AlgamoneyExceptionHandler;
 import com.example.algamoney.api.model.Launch;
 import com.example.algamoney.api.repository.LaunchRepository;
 import com.example.algamoney.api.repository.filter.LaunchFilter;
+import com.example.algamoney.api.repository.projection.LaunchResume;
 import com.example.algamoney.api.service.LaunchService;
 import com.example.algamoney.api.service.exception.PersonNonExistentOrInactiveException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,13 @@ public class LaunchResource {
         return launchRepository.search(launchFilter, pageable);
     }
 
+    @GetMapping(params = "resume")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANÇAMENTO') and #oauth2.hasScope('read')")
+    public Page<LaunchResume> resume(LaunchFilter launchFilter, Pageable pageable){
+        return launchRepository.resume(launchFilter, pageable);
+    }
+
+
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANÇAMENTO') and #oauth2.hasScope('read')")
     public ResponseEntity<Launch> listLaunch(@PathVariable Long code){
@@ -63,6 +71,7 @@ public class LaunchResource {
 
     @DeleteMapping("{code}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('ROLE_REMOVER_LANÇAMENTO') and #oauth2.hasScope('write')")
     public void delete(@PathVariable Long code){
         launchRepository.deleteById(code);
     }

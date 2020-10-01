@@ -1,7 +1,11 @@
 package com.example.algamoney.api.repository.Launch;
 
+import com.example.algamoney.api.model.Category_;
 import com.example.algamoney.api.model.Launch;
+import com.example.algamoney.api.model.Launch_;
+import com.example.algamoney.api.model.Person_;
 import com.example.algamoney.api.repository.filter.LaunchFilter;
+import com.example.algamoney.api.repository.projection.LaunchResume;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +43,28 @@ public class LaunchRepositoryImpl implements LaunchRepositoryQuery{
         return new PageImpl<>(query.getResultList(), pageable, total(launchFilter));
     }
 
+    @Override
+    public Page<LaunchResume> resume(LaunchFilter launchFilter, Pageable pageable) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<LaunchResume> criteria = builder.createQuery(LaunchResume.class);
+        Root<Launch> root = criteria.from(Launch.class);
+
+        criteria.select(builder.construct(LaunchResume.class
+                , root.get(Launch_.CODE), root.get(Launch_.DESCRIPTION)
+                , root.get(Launch_.EXPIRATION_DATE), root.get(Launch_.PAYMENT_DATE)
+                , root.get(Launch_.VALUE), root.get(Launch_.TYPE)
+                , root.get(Launch_.CATEGORY).get(Category_.NAME)
+                , root.get(Launch_.PERSON).get(Person_.NAME)));
+
+        Predicate[] predicates = createRestrictions(launchFilter, builder, root);
+        criteria.where(predicates);
+
+        TypedQuery<LaunchResume> query = manager.createQuery(criteria);
+        adicionarRestricoesDePaginacao(query, pageable);
+
+        return new PageImpl<>(query.getResultList(), pageable, total(launchFilter));
+    }
+
     private Long total(LaunchFilter launchFilter) {
         CriteriaBuilder builder = manager.getCriteriaBuilder();
         CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
@@ -51,7 +77,7 @@ public class LaunchRepositoryImpl implements LaunchRepositoryQuery{
         return manager.createQuery(criteria).getSingleResult();
     }
 
-    private void adicionarRestricoesDePaginacao(TypedQuery<Launch> query, Pageable pageable) {
+    private void adicionarRestricoesDePaginacao(TypedQuery<?> query, Pageable pageable) {
         int paginaAtual = pageable.getPageNumber();
         int totalRegistroPorPagina = pageable.getPageSize();
         int primeiroRegistroDaPagina = paginaAtual * totalRegistroPorPagina;
