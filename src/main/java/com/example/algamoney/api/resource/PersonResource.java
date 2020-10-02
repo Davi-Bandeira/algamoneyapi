@@ -1,11 +1,17 @@
 package com.example.algamoney.api.resource;
 
 import com.example.algamoney.api.event.ResourceCreatedEvent;
+import com.example.algamoney.api.model.Launch;
 import com.example.algamoney.api.model.Person;
 import com.example.algamoney.api.repository.PersonRepository;
+import com.example.algamoney.api.repository.filter.LaunchFilter;
+import com.example.algamoney.api.repository.filter.PersonFilter;
+import com.example.algamoney.api.repository.projection.PersonResume;
 import com.example.algamoney.api.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,9 +36,9 @@ public class PersonResource {
     private PersonService personService;
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')")
-    public List<Person> list(){
-        return personRepository.findAll();
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANÇAMENTO') and #oauth2.hasScope('read')")
+    public Page<Person> search(PersonFilter personFilter, Pageable pageable){
+        return personRepository.search(personFilter, pageable);
     }
 
     @GetMapping("/{code}")
@@ -40,6 +46,12 @@ public class PersonResource {
     public ResponseEntity<Person> listPerson(@PathVariable(value="code") Long code){
         Optional<Person> person = personRepository.findById(code);
         return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(params = "resume")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANÇAMENTO') and #oauth2.hasScope('read')")
+    public Page<PersonResume> resume(PersonFilter personFilter, Pageable pageable){
+        return personRepository.resume(personFilter, pageable);
     }
 
     @PostMapping

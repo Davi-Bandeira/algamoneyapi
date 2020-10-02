@@ -53,7 +53,6 @@ public class LaunchResource {
         return launchRepository.resume(launchFilter, pageable);
     }
 
-
     @GetMapping("/{code}")
     @PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANÇAMENTO') and #oauth2.hasScope('read')")
     public ResponseEntity<Launch> listLaunch(@PathVariable Long code){
