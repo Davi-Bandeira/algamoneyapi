@@ -75,6 +75,16 @@ public class LaunchResource {
         launchRepository.deleteById(code);
     }
 
+    @PutMapping("{code}")
+    public ResponseEntity<Launch> update(@PathVariable Long code, @Valid @RequestBody Launch launch){
+        try {
+            Launch launchSave = launchService.update(code, launch);
+            return ResponseEntity.ok(launchSave);
+        } catch (IllegalArgumentException exception){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @ExceptionHandler( {PersonNonExistentOrInactiveException.class} )
     public ResponseEntity<Object> handlePersonNonExistentOrInactiveException(PersonNonExistentOrInactiveException ex){
         String messageUser = messageSource.getMessage("pessoa.inexistente-ou-inativa", null, LocaleContextHolder.getLocale());

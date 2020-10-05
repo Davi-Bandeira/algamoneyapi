@@ -14,13 +14,13 @@ CREATE TABLE launchs(
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO launchs(description, expiration_date, payment_date, value, note, type, category_code, person_code)
-values ('Salário Mensal', '2020-06-10', null, 6500.00, 'Distribuição de lucros', 'RECEITA', 5, 4);
+values ('Salário Mensal', '2020-06-10', null, 6500.00, 'Distribuição de lucros', 'RECEITA', 5, 1);
 
 INSERT INTO launchs(description, expiration_date, payment_date, value, note, type, category_code, person_code)
-values ('Café', '2020-05-10', null, 8.32, 'null', 'DESPESA', 2, 5);
+values ('Café', '2020-05-10', null, 8.32, 'null', 'DESPESA', 2, 4);
 
 INSERT INTO launchs(description, expiration_date, payment_date, value, note, type, category_code, person_code)
-values ('Salário Mensal', '2020-06-22', null, 7000.00, 'Distribuição de lucros', 'RECEITA', 5, 5);
+values ('Salário Mensal', '2020-06-22', null, 7000.00, 'Distribuição de lucros', 'RECEITA', 5, 2);
 
 INSERT INTO launchs(description, expiration_date, payment_date, value, note, type, category_code, person_code)
-values ('Jogos', '2020-11-22', null, 100.00, 'GASTOS', 'DESPESA', 12, 5);
+values ('Jogos', '2020-11-22', null, 100.00, 'GASTOS', 'DESPESA', 2, 3);
